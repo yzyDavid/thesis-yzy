@@ -1,0 +1,69 @@
+% Zhejiang University Undergraduate Graduation Thesis/Design Template
+% Author: Zixuan Wang
+% Email : zxwang42 [at] gmail.com
+% Update: https://github.com/TheNetAdmin/zjuthesis/releases
+
+\documentclass[
+    StudentName = 于振云,
+    StudentID   = 3150103978,
+    AdvisorName = 指导教师,
+    Grade       = 2015,   % only the year, no `级`
+    Major       = 计算机科学与技术,
+    Department  = 计算机科学与技术学院,
+    Title       = 毕业论文/设计题目,
+    SubmitDate  = 递交日期,
+    MajorFormat = cs,
+    Type        = design, % `thesis` or `design`
+    Period      = final,  % `final`  or `proposal`
+    BlindReview = false   % `true`   or `false`
+]{config/zjuthesis}
+
+\newcommand{\inputfinal}
+{
+    % Final part
+    \newrefsection
+    \inputpage{final/cover}
+    \inputpage{final/previous}
+    \inputpage{final/toc}
+
+    \cleardoublestylepage{previous}
+    \ifthenelse{\equal{\Type}{design}}
+        {\part{毕业设计}}
+        {\part{毕业论文}}
+    \input{content/final/content}
+
+    \inputpage{final/post}
+
+    % Proposal part
+    \newrefsection
+    \cleardoublestylepage{empty}
+    \ifthenelse{\equal{\Type}{design}}
+        {\part{毕业设计开题报告}}
+        {\part{毕业论文开题报告}}
+
+    \inputpage{proposal/cover}
+    \inputpage{proposal/previous}
+    \input{content/proposal/content}
+    \inputpage{proposal/post}
+}
+
+\newcommand{\inputproposal}
+{
+    \inputpage{proposal/cover}
+    \inputpage{proposal/previous}
+    \inputpage{proposal/toc}
+    \input{content/proposal/content}
+    \inputpage{proposal/post}
+}
+
+\begin{document}
+
+\ifthenelse{\equal{\Period}{final}}
+{
+    \inputfinal{}
+}
+{
+    \inputproposal{}
+}
+
+\end{document}
