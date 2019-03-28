@@ -5,8 +5,12 @@ pdf: content/* config/* figure/* pages/* reference/*
 
 clean:
 
-wc:
+wc: wc-trans wc-proposal
+
+wc-trans:
 	texcount content/proposal/translation/translation.tex
+
+wc-proposal:
 	texcount content/proposal/proposal/*
 
-.PHONY: all clean wc
+.PHONY: all clean wc wc-trans wc-proposal
