@@ -1,7 +1,10 @@
-all: pdf
+default: xelatex-pdf
 
-pdf: content/* config/* figure/* pages/* reference/*
+latexmk-pdf: content/* config/* figure/* pages/* reference/*
 	latexmk -xelatex -outdir=out zjuthesis.tex
+
+xelatex-pdf:  content/* config/* figure/* pages/* reference/*
+	xelatex -output-directory=out zjuthesis.tex
 
 clean:
 

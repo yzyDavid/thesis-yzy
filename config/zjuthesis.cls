@@ -28,7 +28,8 @@
     zihao=-4,
     heading=true,
     UTF8,
-    twoside
+    twoside,
+    fontset=fandol
 ]{ctexrep}
 
 \input{config/packages}
