@@ -11,7 +11,31 @@
 
 Kubernetes 集群的基本运行需要以下几个部分：
 
+\subsubsection*{etcd}
+
+etcd 的官方描述称之为 etc distributed。即它的功能目标是将 UNIX 系统目录的 /etc 分布式，中心化起来。实际上它的功能与 Apache Zookeeper 类似，是一个分布式高可用的键值对存储服务，或者称为分布式协调服务。在 Kubernetes 当中，一份 k8s 的系统部署会将集群的所有信息持久化在 etcd 当中。所以一套可用的 k8s 部署一定会有一个 etcd 集群。
+
+\subsubsection*{kube-apiserver}
+
+API Server 是用户与 k8s 集群的桥梁，负责接受用户提交的任务，将其持久化并等待调度。
+
+\subsubsection*{kube-controller-manager}
+
+Controller 是 k8s 集群中负责调度某一个应用部署的角色，他们本身需要被一个 Manager 去管理，这个 Manager 也就间接起到了管理整个集群的功能。同样的这个管理者也需要能获取 k8s 集群的部署信息，因此他也需要连接 API Server。可以见得 API Server 一定是承担了以 kubernetes 领域专用的格式和权限管理约定暴露整个集群所有数据的功能。
+
+\subsubsection*{kubelet}
+
+kubelet 是需要部署在受集群管控的每一台机器上的，它是集群 worker 的 agent 角色。kubelet 以 HTTP Server 的方式工作，接受管理者发出的请求来执行命令。
+
+\subsubsection*{kube-proxy}
+
+\subsection{快速搭建方式}
+
+因为从零开始搭建 kubernetes 集群可能存在很多细节问题，也有很多条件需求，对域名，网络等等条件都有依赖，且工作量和调试难度都不低。因此这里我们也介绍一下一些已有的工具，用来快速搭建集群。出于不同的目的，两种方式我都进行了尝试。
+
 \subsection{Operator 开发}
+
+本部分讲述在开发 Operator 的过程，遇到的问题，设计思路以及其中的细节。
 
 \subsection{算法设计}
 
