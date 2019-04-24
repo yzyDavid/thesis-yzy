@@ -16,4 +16,7 @@ wc-trans:
 wc-proposal:
 	texcount content/proposal/proposal/*
 
+wc-midcheck:
+	texcount content/proposal/midcheck/midcheck.tex
+
 .PHONY: all clean wc wc-trans wc-proposal
