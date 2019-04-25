@@ -102,9 +102,16 @@ f7a634bc0085        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_etcd-minikube_kube-system_973c2fad42d1ca0c0cafe14fa28f9a70_0
 \end{lstlisting}
 
-因为考虑到要在实体机，云环境，虚拟化等多处运行，为了防止虚拟化环境下缺少嵌套虚拟化支持，我们关闭 minikube 的一切虚拟机后端，设置为 none，即使用本机裸机，并且使用 root 用户 (sudo) 执行命令，从而满足向系统中安装软件的权限限制。
+因为考虑到要在实体机，云环境，虚拟化等多处运行，为了防止虚拟化环境下缺少嵌套虚拟化支持，我们关闭 minikube 的一切虚拟机后端，设置为 none，即使用本机裸机，并且使用 root 用户 (sudo) 执行命令，从而满足向系统中安装软件的权限限制。这一步可以根据不同的情况进行选择，默认配置的 virtualbox 泛用性较好，在 Linux 环境下，kvm 作为后端也是很好的选择。因为使用 none 裸机环境需要本机具有 docker 环境，读者可以根据自己的环境中具有哪些工具自由选择。
 
 事实上，minikube 同时支持 Windows，macOS，Linux 三大平台，因为主要运行在虚拟机中，系统本机的操作系统环境本身不被依赖。几乎所有主流的虚拟机都被支持，包括了 KVM, VirtualBox, HyperV, VMWare Fusion 等。
+
+下面给出 Kubernetes 集群运行后的 dashboard 截图。
+
+\begin{figure}
+    \includegraphics{dashboard-header.png}
+    \caption{Dashboard Header}
+\end{figure}
 
 \subsection{Operator 开发}
 
