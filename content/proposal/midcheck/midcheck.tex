@@ -110,12 +110,25 @@ e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 
 \begin{figure}
     \includegraphics[width=0.8\linewidth]{dashboard-header.png}
-    \caption{Dashboard Header}
+    \caption{Kubernetes Dashboard}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\linewidth]{dashboard-pods.png}
+    \caption{Dashboard Pods View}
 \end{figure}
 
 \subsection{Operator 开发}
 
 本部分讲述在开发 Operator 的过程，遇到的问题，设计思路以及其中的细节。
+
+Kubernetes 生态的组件多采用 Go 语言开发，Operator 也如此。
+
+\subsubsection{框架}
+
+Operator SDK 提供了一种快速搭建 Kubernetes Operator 的方法。很容易想到与 API 对接的一个专用角色当中会有很多内容几乎固定的模板代码，SDK 提供的命令行工具可以帮助我们快速生成这部分代码。
+
+https://coreos.com/operators/ 是这个项目的官方网站，可以在这里找到一些说明。总的来讲，Operator 是一种打包，部署和管理 Kubernetes 应用的方法。Kubernetes 应用定义为部署在 Kubernetes 集群中并且使用 Kubernetes API 和 kubectl 工具管理的应用。为了最大化 Kubernetes 的价值，我们应该使用自恰且可解释的 API 对象来描述和管理应用。
 
 \subsection{算法设计}
 
