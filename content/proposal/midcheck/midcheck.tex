@@ -120,6 +120,8 @@ e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 
 尝试在本地 Kubernetes 集群中运行应用：
 
+图中展示了容器编排系统领域的 Hello World，Web 服务器的启动流程。我们在管理页面填写 nginx 镜像的
+
 \begin{figure}
     \includegraphics[width=0.8\linewidth]{python-sets.png}
     \caption{Python Replica Set}
@@ -133,13 +135,23 @@ e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 
 Kubernetes 生态的组件多采用 Go 语言开发，Operator 也如此。
 
+开发环境方面，我们使用 GoLand 作为 Go 语言的开发 IDE，使用 gentoo Linux 作为开发环境。使用嵌套虚拟化的方式，在 Linux 虚拟机中运行 KVM 虚拟机作为 Kubernetes 集群的运行环境。
+
 \subsubsection{框架}
 
 Operator SDK 提供了一种快速搭建 Kubernetes Operator 的方法。很容易想到与 API 对接的一个专用角色当中会有很多内容几乎固定的模板代码，SDK 提供的命令行工具可以帮助我们快速生成这部分代码。
 
 https://coreos.com/operators/ 是这个项目的官方网站，可以在这里找到一些说明。总的来讲，Operator 是一种打包，部署和管理 Kubernetes 应用的方法。Kubernetes 应用定义为部署在 Kubernetes 集群中并且使用 Kubernetes API 和 kubectl 工具管理的应用。为了最大化 Kubernetes 的价值，我们应该使用自恰且可解释的 API 对象来描述和管理应用。
 
+\subsubsection{Custom Resource Definition}
+
 \subsection{算法设计}
+
+对于一个通用的调度算法，我们往往可以简化为一个背包问题的延伸。所谓背包问题，指的是我们具有多个背包，每个背包能承载一定量的重量，背包当中需要存放重量各自不同的物品，我们以一个确定的目标，如使用给定的背包数目和规格装下的物品重量之和最大。
+
+对于调度算法来讲，不考虑动态改变配置的场景下调度动作路径的问题，则可以简化为如下一个问题：
+
+对于异质数据和计算逻辑的部署，我们称呼一份数据和计算模型一致的多副本为一个应用(application)，承载多个相同应用的一组进程副本为集群(cluster)，可见这里的应用就是“物品”，集群就是“背包”。
 
 \section{问题与建议}
 
