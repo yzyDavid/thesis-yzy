@@ -8,7 +8,7 @@ xelatex-pdf:  content/* config/* figure/* pages/* reference/*
 
 clean:
 
-wc: wc-trans wc-proposal
+wc: wc-final
 
 wc-trans:
 	texcount content/proposal/translation/translation.tex
@@ -18,5 +18,8 @@ wc-proposal:
 
 wc-midcheck:
 	texcount content/proposal/midcheck/midcheck.tex
+
+wc-final:
+	texcount content/final/* content/final/introduction/* content/final/body/*
 
 .PHONY: all clean wc wc-trans wc-proposal
