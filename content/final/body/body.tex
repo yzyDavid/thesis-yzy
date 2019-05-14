@@ -6,13 +6,17 @@
 
 本部分描述本设计所开发的系统的功能与目的。
 
+\subsubsection{背景与趋势}
+
+\subsubsection{问题与解决方案}
+
 \subsection{开发技术}
 
 本部分列出工程实现上所依赖的全部技术。
 
 golang v1.11.5
 
-GoLand
+GoLand 2019.1.1
 
 Kubernetes v1.14
 
@@ -24,9 +28,23 @@ operator-framework v1.0.0
 
 本部分将会论述为了实现本系统，依赖的开源组件与开源解决方案等。
 
+\subsubsection{Kubernetes}
+
+Kubernetes （下文中可能简称为k8s）是由云原生基金会所维护的项目，其设计思想脱胎于 Google 内部使用的 Borg 集群管理系统。Kubernetes 借助于容器的实现，负责容器编排与资源调度分配。Kubernetes 的概念与所包含的组件在下文中详细介绍，通过这段说明可以使读者更容易理解如此一个容器编排系统负责了什么工作，解决了什么问题。
+
+\subsubsection{Tensorflow Serving}
+
+Tensorflow 是近年来生态最完善的深度学习框架之一，从其工作方式来看，也可以被称为计算图框架。其深度学习相关的部分我们不在这里做过多讨论，有很丰富的资料，感兴趣的读者可以自行查阅。这里我们介绍一下 Tensorflow Serving，这个负责使用训练好的模型的组件，其工作方式，与容器生态的关系，最终得出为何用它作为本设计中的代表应用的例子。
+
+\subsubsection{Kubernetes Operator}
+
 \subsection{实现方式}
 
 本部分将会详细讲解本人实现此系统的详细过程。
+
+\subsubsection{搭建 Kubernetes 开发环境}
+
+作为一个生产级别的容器编排系统，天然就是面向分布式系统，保证可靠性的，工作方式也需要天然面向分布式系统，为部署在多台机器上做设计。同时此系统将应用程序的运行，甚至网络环境都进行了接管，因此对运行环境有很强的依赖。实际操作上也是如此，我调研了多种搭建 Kubernetes 环境的方案，最终只有一种方式实现起来相对简单。
 
 \subsection{算法描述}
 
@@ -52,7 +70,11 @@ operator-framework v1.0.0
 
 在这个背景下，调度算法可以处理如下问题：
 
+算法的输入如下：
+
 有 $N$ 个业务，或称租户，模型，下面统称模型，记为 $Model_1,Model_2,...,Model_N$。每个模型都需要 $a$ 个硬性资源 $Rfix_1,Rfix_2,...,Rfix_a$，$b$ 个弹性资源 $Relastic_1,Relastic_2,...,Relastic_b$。我们还有 $M$ 种机器类型，每种机器类型也需要给出上述硬性资源和弹性资源的提供量 $Rfix_1,Rfix_2,...,Rfix_a,Relastic_1,Relastic_2,...,Relastic_b$。
+
+算法的输出如下：
 
 我们需要给出 $d$ 个部署信息，记为 $Deployment_1,Deployment_2,...,Deployment_d$，每个部署信息包括了其所包含的模型列表以及需要的机器个数，即模型列表和副本数组成的二元组：$([Model_x,Model_y,...,Model_{last}],Replicas)$。
 
@@ -72,7 +94,7 @@ operator-framework v1.0.0
 
 每个应用有多个不同维度的资源，这是比起传统的背包问题的复杂之处，资源可以包括CPU 资源，内存，磁盘存储，网络带宽等多个维度。易知在满足这些要求下的优化问题是 NP 完全问题。这意味着我们无法给出一个确定性的最优的答案，而是使用贪心等算法在可以接受的时间内找到一个较优解。我们甚至不能给出准确的“最优”这一概念的定义。但确定的是，解决各类背包问题的思想在我们的系统开发中都可以得到运用。
 
-\subsubsection{结论}
+\subsubsection{总结与展望}
 
 \subsection{效果对比}
 
