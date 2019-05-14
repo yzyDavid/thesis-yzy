@@ -52,7 +52,9 @@ operator-framework v1.0.0
 
 在这个背景下，调度算法可以处理如下问题：
 
-有 $N$ 个业务，或称租户，模型，下面统称模型，记为 $b_1,b_2,...,b_N$。每个模型都需要硬性资源
+有 $N$ 个业务，或称租户，模型，下面统称模型，记为 $Model_1,Model_2,...,Model_N$。每个模型都需要 $a$ 个硬性资源 $Rfix_1,Rfix_2,...,Rfix_a$，$b$ 个弹性资源 $Relastic_1,Relastic_2,...,Relastic_b$。我们还有 $M$ 种机器类型，每种机器类型也需要给出上述硬性资源和弹性资源的提供量 $Rfix_1,Rfix_2,...,Rfix_a,Relastic_1,Relastic_2,...,Relastic_b$。
+
+我们需要给出 $d$ 个部署信息，记为 $Deployment_1,Deployment_2,...,Deployment_d$，每个部署信息包括了其所包含的模型列表以及需要的机器个数，即模型列表和副本数组成的二元组：$([Model_x,Model_y,...,Model_{last}],Replicas)$。
 
 \subsubsection{贪心算法}
 
