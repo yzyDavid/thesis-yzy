@@ -60,7 +60,9 @@ Kernel and Services Requirements
 
 本部分讲解运行 Kubernetes 的机器需要满足的条件。
 
-Kubernetes 本身需要在 Linux 服务器上运行，而 Kubernetes 本身是否运行在虚拟机当中又造成了环境需求的不一致。不过总的来讲，我们的开发环境需要满足以下这些需求就能够运行。对于内核来说，需要支持 iptables 的大部分调度算法类内核模块，以便支持 Kubernetes 网络相关的功能。需要支持 KVM，以便我们选择 KVM 作为运行 minikube 虚拟机的后端。
+Kubernetes 本身需要在 Linux 服务器上运行，而 Kubernetes 本身是否运行在虚拟机当中又造成了环境需求的不一致。不过总的来讲，我们的开发环境需要满足以下这些需求就能够运行。对于内核来说，需要支持 iptables 的大部分调度算法类内核模块，以便支持 Kubernetes 网络相关的功能。需要支持 KVM，以便我们选择 KVM 作为运行 minikube 虚拟机的后端，同时需要支持 libvirt 需要的部分功能。我们还可能需要多种内核 namespace 支持，包括 mount namespace, pid namespace 等等，以及部分文件开关和杂项以便支持 docker 工作。好在编译安装 docker 与 libvirt 时，脚本会对内核选项进行校验，并输出不满足的项目。最后我们还需要 NFS 支持，如果需要像我一样使用 NFS 挂载模型数据目录的话。
+
+这里我们假设读者有能力自行配置内核编译选项，并且编译安装内核。较为成熟的发行版往往会提供发行版官方分支的内核源码软件包供我们使用。并且我们这里要求的内核功能在主流发行版当中往往是默认开启的，这里的介绍涉及一些原理，给读者补充背景知识并且留作备用。
 
 % TODO: from proposal
 
