@@ -44,13 +44,71 @@ Tensorflow Serving 非常注重面向容器的生态，不难得出结论，只�
 
 \subsubsection{Kubernetes Operator}
 
+Kubernetes Operator 是 Kubernetes 生态中为用户自己提供调度逻辑和功能扩展的一类接口与实现方式的总称。
+
 \subsection{实现方式}
 
 本部分将会详细讲解本人实现此系统的详细过程。
 
 \subsubsection{搭建 Kubernetes 开发环境}
 
-作为一个生产级别的容器编排系统，天然就是面向分布式系统，保证可靠性的，工作方式也需要天然面向分布式系统，为部署在多台机器上做设计。同时此系统将应用程序的运行，甚至网络环境都进行了接管，因此对运行环境有很强的依赖。实际操作上也是如此，我调研了多种搭建 Kubernetes 环境的方案，最终只有一种方式实现起来相对简单。
+作为一个生产级别的容器编排系统，天然就是面向分布式系统，保证可靠性的，工作方式也需要天然面向分布式系统，为部署在多台机器上做设计。同时此系统将应用程序的运行，甚至网络环境都进行了接管，因此对运行环境有很强的依赖。实际操作上也是如此，我调研了多种搭建 Kubernetes 环境的方案，最终只有一种方式实现起来相对简单。下面概要讲解一下各种搭建方式的优劣，以及我最后的选择。
+
+% TODO: enumerate
+
+Kernel and Services Requirements
+
+本部分讲解运行 Kubernetes 的机器需要满足的条件。
+
+% TODO: from proposal
+
+dind approach
+
+DinD 指代 Docker in Docker。
+
+Bare Metal approach
+
+minikube local approach
+
+minikube VM approach
+
+\subsubsection{搭建 Kubernetes Operator 开发环境}
+
+在可以连接并管理一个 Kubernetes 集群的前提下，我们可以开发自己的 Operator，并且以某些方式运行我们的 Operator，让它进行决策，并且向 API Server 提交 API 对象以执行我们需要的行为。
+
+Operator Framework 支持包括 golang，Ansible 在内的几种编程语言或工具。这其中 golang 由于靠近 docker，云原生等生态系统，一定会提供，Ansible 架构则是传统集群管理自动化运维的工具，主要推动方是 Redhat，出现在这里也很合乎习惯。为了贴近生态，更容易在 troubleshooting 时获取信息，也为了通用编程语言处理逻辑时的便捷性，本人选择 golang 作为开发语言。
+
+Operator Framework 可以理解为是一套 golang 语言开发的，提供 Operator 基本功能的库。它包装了 leader 选举，程序入口，常用操作 utils 等内容。我们编写的 Operator 逻辑可以在依赖，扩展 Framework 提供的代码的基础上进行。
+
+Operator SDK 是一个命令行工具。上述框架代码的很多细节，手工编写意义不大且容易出错，SDK CLI 可以帮助我们生成。同时当我们为自己的 Operator 添加功能模块时，编写了部分抽象定义的代码，SDK 帮助我们以代码生成的方式生成模版代码，被内部其他逻辑使用。最后，我们编写的代码如果要在 Kubernetes 集群中运行，需要相对而言繁琐一些的编译，构建，制作 docker 镜像等发布流程，而 SDK CLI 可以帮助我们一键式在集群外运行 Operator，与集群交互，极大加快了迭代测试的速度。
+
+\subsubsection{开发调度执行模块}
+
+定义 CRD 与 CR，CRD 为自定义资源定义，给出了我们添加的自定义资源的模板，CR 为自定义资源，是这种定义下的一个实例。利用 OOP 的概念来解释的话，CRD 就是类型 class，CR 就是实例 instance。下面给出本人编写的 yaml 格式的定义以及对应的 golang 数据结构，再解释其释义。
+
+% TODO: code
+
+\subsubsection{开发算法实现}
+
+由上下文给出的分析可知，我们的调度算法是一个纯函数，在给定业务模型定义和服务器节点资源定义后，输出一组编排方式，它的输入与输出都是给定的，下面我们把相关的数据结构定义与函数签名（golang 语法）给出：
+
+% TODO: code
+
+\subsubsection{联调测试}
+
+本部分讲述本设计中在基本完成代码的开发与测试后，如何测试系统能否正常工作，观察效果以及使用方式。
+
+
+
+\subsubsection{结果对比}
+
+\subsubsection{难点与问题}
+
+本部分讲述在实现的过程当中，本人遇到了哪些难以解决的问题，最后又是如何克服的。这部分旨在让读者明白完成一个工程项目比起理论算法研究的不同之处，以及在实现的过程当中本人的时间和精力主要用于解决哪些问题了。
+
+
+
+\subsubsection{工程实现细节与亮点}
 
 \subsection{算法描述}
 
