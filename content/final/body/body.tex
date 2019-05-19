@@ -64,17 +64,39 @@ Kubernetes 本身需要在 Linux 服务器上运行，而 Kubernetes 本身是�
 
 这里我们假设读者有能力自行配置内核编译选项，并且编译安装内核。较为成熟的发行版往往会提供发行版官方分支的内核源码软件包供我们使用。并且我们这里要求的内核功能在主流发行版当中往往是默认开启的，这里的介绍涉及一些原理，给读者补充背景知识并且留作备用。
 
+至于内核之外的软件包和服务，我们需要按需安装并调通 docker, libvirt, qemu-kvm 等，视用户打算采用本机方式安装或者虚拟化方式安装而定。
+
 % TODO: from proposal
 
 dind approach
 
-DinD 指代 Docker in Docker。
+DinD 指代 Docker in Docker。这是一种单机部署 Kubernetes 测试集群的方案，并且有人已经在 Github 上开源了一整套工具脚本和解决方案。这一方案适合于用户有能运行 Docker 的 Linux 主机，但是没有虚拟化能力。对于具有对主机的完全控制力和虚拟化能力的情况来讲，DinD 方案也可以采用，但表现不一定有官方性质维护的 minikube 效果更好，在 troubleshooting 和资料支持方面。
+
+在此方案下，我们使用一个功能类似于 minikube 的虚拟机的 Docker 镜像，作为运行 kubernetes 集群的主机，在这个容器内运行 Kubernetes 组件的容器。这样带来的一个问题是，需要宿主机内核完全支持 kubernetes 运行需要的一切特性，且隔离程度不够，docker 版本也需要和 kubernetes 可以配合。
+
+本人的尝试当中，DinD 镜像与容器可以启动，但是工作不完全正常，内部有 kubernetes 组件报错，最终在考量了成本和收益之后，本人选择放弃使用这个方案。
 
 Bare Metal approach
 
+Bare Metal 可以翻译为裸金属服务器，指没有经过任何虚拟化的裸机。这里本人使用个人电脑上安装的 gentoo Linux，读者复现此方案时需要一台任意的 Linux 计算机。Kubernetes 官方网站上存在所有组件的说明和配置方式，也有第三方文档详细描述这里的细节问题，如域名和证书配置，网络方案的选择与配置等细节。
+
+本人出于逐步研究 kubernetes 核心组件的目的，在裸机上配置了 kubernetes 的大多数组件，最后也没有完全完成这些配置。因为这些内容工作量极大并且和本设计的重心无关。达到了了解系统的部署方式这一目标之后就没必要继续了。
+
+% TODO: links
+
 minikube local approach
 
+minikube 是 kubernetes 团队官方提供的一个用于快速部署单机测试集群的工具，其支持所有主流操作系统。事实上，minikube 同时支持 Windows，macOS，Linux 三大平台，因为主要运行在虚拟机中，系统本机的操作系统环境本身不被依赖。几乎所有主流的虚拟机都被支持，包括了 KVM, VirtualBox, HyperV, VMWare Fusion 等。
+
+在一些基本的配置正确的情况下，minikube 可能是最容易成功运行的方式。尽管如此，这个所谓的“开箱即用”也需要环境满足一些基本要求，例如某些平台下，可以运行 docker-machine。
+
+因为虚拟机后端可以被任意替换，minikube 支持将后端配置为 none 从而支持将宿主机直接作为“虚拟机”来使用。这样会对你的宿主机环境添加两个额外的要求：一、你的宿主机需要可用的 docker 服务；二、你需要使用 root 权限运行从而允许 minikube 向宿主系统中安装程序。
+
+此模式的好处是减少了虚拟机的性能开销，且更容易访问运行 kubernetes 的环境，但是对本机的污染和依赖是需要我们付出的代价。
+
 minikube VM approach
+
+% TODO: outputs
 
 \subsubsection{搭建 Kubernetes Operator 开发环境}
 
