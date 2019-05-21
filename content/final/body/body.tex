@@ -155,7 +155,6 @@ f7a634bc0085        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_etcd-minikube_kube-system_973c2fad42d1ca0c0cafe14fa28f9a70_0
 \end{lstlisting}
 
-
 \subsubsection{搭建 Kubernetes Operator 开发环境}
 
 在可以连接并管理一个 Kubernetes 集群的前提下，我们可以开发自己的 Operator，并且以某些方式运行我们的 Operator，让它进行决策，并且向 API Server 提交 API 对象以执行我们需要的行为。
@@ -174,7 +173,66 @@ Operator SDK 是一个命令行工具。上述框架代码的很多细节，手�
 
 定义 CRD 与 CR，CRD 为自定义资源定义，给出了我们添加的自定义资源的模板，CR 为自定义资源，是这种定义下的一个实例。利用 OOP 的概念来解释的话，CRD 就是类型 class，CR 就是实例 instance。下面给出本人编写的 yaml 格式的定义以及对应的 golang 数据结构，再解释其释义。
 
-% TODO: code
+下面是 golang 编写的数据结构定义，不重要的代码，空行和注释已经略去。可见我们将调度的信息输入写入了定义中，用户只要提交任务时照原样写好定义即可使用。
+
+\begin{lstlisting}
+
+// Added by Zhenyun Yu, types here are necessary for specs
+type Model struct {
+    Name string `json:"name"`
+    Memory int32 `json:"memory"`  // in MB
+    ComputingResource int32 `json:"computing_resource"`  // 100 for each core
+}
+
+type Node struct {
+    Memory int32 `json:"memory"`
+    ComputingResource int32 `json:"computing_resource"`
+}
+
+// TfInferenceSpec defines the desired state of TfInference
+// +k8s:openapi-gen=true
+type TfInferenceSpec struct {
+    Models []Model `json:"models"`
+    Nodes []Node `json:"nodes"`
+}
+
+type TfInferenceStatus struct {
+    Deployments []string `json:"deployments"`
+}
+
+type TfInference struct {
+    metav1.TypeMeta   `json:",inline"`
+    metav1.ObjectMeta `json:"metadata,omitempty"`
+
+    Spec   TfInferenceSpec   `json:"spec,omitempty"`
+    Status TfInferenceStatus `json:"status,omitempty"`
+}
+
+// TfInferenceList contains a list of TfInference
+type TfInferenceList struct {
+    metav1.TypeMeta `json:",inline"`
+    metav1.ListMeta `json:"metadata,omitempty"`
+    Items           []TfInference `json:"items"`
+}
+    
+\end{lstlisting}
+
+下面给出的是 yaml 格式的 CRD 定义去除不重要的部分后的结果，可见它是对所有 CRD 类型的抽象，仅给出了名字，版本等元数据，与内容关联不大。事实上我们也仅依靠他“注册”类型，而不依赖具体内容。
+
+\begin{lstlisting}
+
+    apiVersion: apiextensions.k8s.io/v1beta1
+    kind: CustomResourceDefinition
+    metadata:
+      name: tfinferences.serving.example.com
+    spec:
+      group: serving.example.com
+      versions:
+      - name: v1
+        served: true
+        storage: true
+
+\end{lstlisting}
 
 \subsubsection{开发算法实现}
 
