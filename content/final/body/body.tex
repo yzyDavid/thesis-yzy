@@ -181,12 +181,12 @@ Operator SDK 是一个命令行工具。上述框架代码的很多细节，手�
 type Model struct {
     Name string `json:"name"`
     Memory int32 `json:"memory"`  // in MB
-    ComputingResource int32 `json:"computing_resource"`  // 100 for each core
+    ComputingResource int32 `json:"computing\_resource"`  // 100 for each core
 }
 
 type Node struct {
     Memory int32 `json:"memory"`
-    ComputingResource int32 `json:"computing_resource"`
+    ComputingResource int32 `json:"computing\_resource"`
 }
 
 // TfInferenceSpec defines the desired state of TfInference
