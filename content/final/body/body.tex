@@ -56,8 +56,6 @@ Kubernetes Operator 是 Kubernetes 生态中为用户自己提供调度逻辑和
 
 作为一个生产级别的容器编排系统，天然就是面向分布式系统，保证可靠性的，工作方式也需要天然面向分布式系统，为部署在多台机器上做设计。同时此系统将应用程序的运行，甚至网络环境都进行了接管，因此对运行环境有很强的依赖。实际操作上也是如此，我调研了多种搭建 Kubernetes 环境的方案，最终只有一种方式实现起来相对简单。下面概要讲解一下各种搭建方式的优劣，以及我最后的选择。
 
-% TODO: enumerate
-
 \paragraphnl{Kernel and Services Requirements}
 
 本部分讲解运行 Kubernetes 的机器需要满足的条件。
@@ -100,7 +98,63 @@ minikube 是 kubernetes 团队官方提供的一个用于快速部署单机测�
 
 下面我们给出此方式运行 kubernetes 集群的命令与输出，方便读者理解此工具都执行了哪些任务。
 
-% TODO: outputs
+\begin{lstlisting}
+sudo minikube config set vm-driver kvm2
+sudo minikube start
+\end{lstlisting}
+
+若一切顺利，minikube 正常执行了一切任务，应当见到与下述类似的输出内容。
+
+\begin{lstlisting}
+🐳  Version of container runtime is 18.09.2
+⌛  Waiting for image downloads to complete ...
+E0424 00:19:35.003745    1889 start.go:209] Error caching images:  Caching images for kubeadm: caching images: caching image /root/.minikube/cache/images/gcr.io/k8s-minikube/storage-provisioner_v1.8.1: fetching remote image: Get https://gcr.io/v2/: dial tcp 74.125.204.82:443: i/o timeout
+✨  Preparing Kubernetes environment ...
+❌  Unable to load cached images: loading cached images: loading image /root/.minikube/cache/images/gcr.io/k8s-minikube/storage-provisioner_v1.8.1: stat /root/.minikube/cache/images/gcr.io/k8s-minikube/storage-provisioner_v1.8.1: no such file or directory
+🚜  Pulling images required by Kubernetes v1.14.0 ...
+🚀  Launching Kubernetes v1.14.0 using kubeadm ... 
+⌛  Waiting for pods: apiserver proxy etcd scheduler controller dns
+🔑  Configuring cluster permissions ...
+🤔  Verifying component health .....
+🤹  Configuring local host environment ...
+
+⚠️  The 'none' driver provides limited isolation and may reduce system security and reliability.
+⚠️  For more information, see:
+👉  https://github.com/kubernetes/minikube/blob/master/docs/vmdriver-none.md
+
+⚠️  kubectl and minikube configuration will be stored in /root
+⚠️  To use kubectl or minikube commands as your own user, you may
+⚠️  need to relocate them. For example, to overwrite your own settings:
+
+    ▪ sudo mv /root/.kube /root/.minikube $HOME
+    ▪ sudo chown -R $USER $HOME/.kube $HOME/.minikube
+
+💡  This can also be done automatically by setting the env var CHANGE_MINIKUBE_NONE_USER=true
+💗  kubectl is now configured to use "minikube"
+🏄  Done! Thank you for using minikube!
+\end{lstlisting}
+
+下面给出集群启动之后所运行的 docker 容器列表。
+
+\begin{lstlisting}
+CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS               NAMES
+5d416847c422        5cd54e388aba           "/usr/local/bin/kube…"   20 hours ago        Up 20 hours                             k8s_kube-proxy_kube-proxy-qtctj_kube-system_ba4c62f4-65e3-11e9-9acd-3a4feb33d13b_0
+be34a9157d37        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_kube-proxy-qtctj_kube-system_ba4c62f4-65e3-11e9-9acd-3a4feb33d13b_0
+6c0e3702a706        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_coredns-fb8b8dccf-tfct6_kube-system_ba4c6fa2-65e3-11e9-9acd-3a4feb33d13b_0
+46fb09b54279        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_coredns-fb8b8dccf-ssr52_kube-system_ba4bc787-65e3-11e9-9acd-3a4feb33d13b_0
+fde495430bdf        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_storage-provisioner_kube-system_ba4780d4-65e3-11e9-9acd-3a4feb33d13b_0
+05e94c674ce5        00638a24688b           "kube-scheduler --bi…"   20 hours ago        Up 20 hours                             k8s_kube-scheduler_kube-scheduler-minikube_kube-system_58272442e226c838b193bbba4c44091e_0
+0e0f32af6c4b        ecf910f40d6e           "kube-apiserver --ad…"   20 hours ago        Up 20 hours                             k8s_kube-apiserver_kube-apiserver-minikube_kube-system_267a4c5b83c2f08d16cd0b2fb496fdf3_0
+59a4d5ce55c5        2c4adeb21b4f           "etcd --advertise-cl…"   20 hours ago        Up 20 hours                             k8s_etcd_etcd-minikube_kube-system_973c2fad42d1ca0c0cafe14fa28f9a70_0
+ad0edb256af6        b95b1efa0436           "kube-controller-man…"   20 hours ago        Up 20 hours                             k8s_kube-controller-manager_kube-controller-manager-minikube_kube-system_6f22129755f0edc1e35623595e40aab2_0
+cf7beb5a9f2b        119701e77cbc           "/opt/kube-addons.sh"    20 hours ago        Up 20 hours                             k8s_kube-addon-manager_kube-addon-manager-minikube_kube-system_0abcb7a1f0c9c0ebc9ec348ffdfb220c_0
+218f0881a76a        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_kube-scheduler-minikube_kube-system_58272442e226c838b193bbba4c44091e_0
+b04d338f0290        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_kube-apiserver-minikube_kube-system_267a4c5b83c2f08d16cd0b2fb496fdf3_0
+f7a634bc0085        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_kube-controller-manager-minikube_kube-system_6f22129755f0edc1e35623595e40aab2_0
+446a4cd0e374        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_kube-addon-manager-minikube_kube-system_0abcb7a1f0c9c0ebc9ec348ffdfb220c_0
+e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_etcd-minikube_kube-system_973c2fad42d1ca0c0cafe14fa28f9a70_0
+\end{lstlisting}
+
 
 \subsubsection{搭建 Kubernetes Operator 开发环境}
 
@@ -132,9 +186,11 @@ Operator SDK 是一个命令行工具。上述框架代码的很多细节，手�
 
 本部分讲述本设计中在基本完成代码的开发与测试后，如何测试系统能否正常工作，观察效果以及使用方式。
 
+我们可以先使系统运行，然后向其提交一个 CR 描述，随后观察 Operator 有没有执行，得到正确的部署。我们将提交的 CR 文件与测试结果附在下方。
 
+ % TODO: code && pic
 
-\subsubsection{结果对比}
+% \subsubsection{结果对比}
 
 % TODO: do what here?
 
