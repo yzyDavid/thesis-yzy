@@ -162,7 +162,9 @@ Operator SDK 是一个命令行工具。上述框架代码的很多细节，手�
 
 \paragraphnl{编排算法至 Kubernetes Deployment 映射}
 
-为了描述不同应用的部署，kubernetes 抽象出了多个概念。
+为了描述不同应用的部署，kubernetes 抽象出了多个概念。对于无状态，可以横向扩展的应用来讲，这个概念叫做 Deployment。我们的Operator 只需保证一个概念，即任意时刻，我们所需要在线服务中逻辑集群，都有对应的 Deployment 存在。如此 kubernetes 便可以帮我们将部署调节至目标状态。
+
+但是我们的 Operator 所处理的一份用户输入，会被算法划分为多个逻辑集群，这需要我们的 Operator 同时维护多个 Deployments。如何维护我们的逻辑集群到 kubernetes deployment 对象的映射关系才方便？本设计的做法是，将唯一确定一个 deployment 信息的数据，包括模型和所有模型的硬性数据。将他们按照固定的算法排序后序列化作为键，再哈希为短十六进制字符串，作为 deployment 命名的一部分。这种设计下，deployment 的名称后将有短横线分隔的两个哈希值，分别代表 CRD 的键和逻辑集群的键，含义可以在调试时观察，也不会过长，且作为 Operator 操作的依据。
 
 \subsection{算法描述}
 
