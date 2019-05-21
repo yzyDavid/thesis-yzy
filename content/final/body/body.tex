@@ -246,7 +246,27 @@ type TfInferenceList struct {
 
 我们可以先使系统运行，然后向其提交一个 CR 描述，随后观察 Operator 有没有执行，得到正确的部署。我们将提交的 CR 文件与测试结果附在下方。
 
- % TODO: code && pic
+\begin{lstlisting}
+
+apiVersion: serving.example.com/v1
+kind: TfInference
+metadata:
+  name: example-tfinference
+spec:
+  models:
+    - name: mnist
+      memory: 100
+      computing_resource: 50
+    - name: dummy
+      memory: 50
+      computing_resource: 10
+  nodes:
+    - memory: 1024
+      computing_resource: 200
+
+\end{lstlisting}
+
+ % TODO: pic
 
 % \subsubsection{结果对比}
 
@@ -328,17 +348,17 @@ type TfInferenceList struct {
 
 每个应用有多个不同维度的资源，这是比起传统的背包问题的复杂之处，资源可以包括CPU 资源，内存，磁盘存储，网络带宽等多个维度。易知在满足这些要求下的优化问题是 NP 完全问题。这意味着我们无法给出一个确定性的最优的答案，而是使用贪心等算法在可以接受的时间内找到一个较优解。我们甚至不能给出准确的“最优”这一概念的定义。但确定的是，解决各类背包问题的思想在我们的系统开发中都可以得到运用。
 
-如果要给出一个最优的解，我们可以搜索遍历解空间，做一些优化的话，可以利用记忆化搜索以及动态规划的思想加以改进。 %TODO
+如果要给出一个最优的解，我们可以搜索遍历解空间，做一些优化的话，可以利用记忆化搜索以及动态规划的思想加以改进。尽管我们最终的算法可能无法接受这样的时间开销，但是类似的优化方式总是值得参考的。
 
 \subsubsection{总结与展望}
 
 这一部分总结我们采用的算法，以及它的实际表现，以及有哪些不足之处我们还可以改进。
 
-% TODO：enumerate
-
 \paragraphnl{最终算法}
 
-总的来讲，调度问题可以抽象为一个背包问题求解的过程。
+如上文所述，调度问题可以抽象为一个背包问题求解的过程。在已知机器资源数的前提下，相当于我们知道了背包的规格，接下来就是寻找一种在本设计的实际背景下最有效的算法。
+
+% TODO: algorithm
 
 \paragraphnl{增量式调度}
 
