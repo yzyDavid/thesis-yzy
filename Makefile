@@ -1,4 +1,4 @@
-default: xelatex-pdf
+default: latexmk-pdf
 
 latexmk-pdf: content/* config/* figure/* pages/* reference/*
 	latexmk -xelatex -outdir=out zjuthesis.tex
