@@ -36,11 +36,11 @@ operator-framework v1.0.0
 
 \subsubsection{Kubernetes}
 
-Kubernetes \cite{kubernetes} （下文中可能简称为k8s）是由云原生基金会所维护的项目，其设计思想脱胎于 Google 内部使用的 Borg 集群管理系统。Kubernetes 借助于容器的实现，负责容器编排与资源调度分配。Kubernetes 的概念与所包含的组件在下文中详细介绍，通过这段说明可以使读者更容易理解如此一个容器编排系统负责了什么工作，解决了什么问题。
+Kubernetes \cite{kubernetes} （下文中可能简称为k8s）是由云原生基金会所维护的项目，其设计思想脱胎于 Google 内部使用的 Borg 集群管理系统 \cite{borg} 。Kubernetes 借助于容器的实现，负责容器编排与资源调度分配，其作用与 Apache Hadoop YARN \cite{hadoop} 类似。Kubernetes 的概念与所包含的组件在下文中详细介绍，通过这段说明可以使读者更容易理解如此一个容器编排系统负责了什么工作，解决了什么问题。
 
 \subsubsection{Tensorflow Serving}
 
-Tensorflow 是近年来生态最完善的深度学习框架之一，从其工作方式来看，也可以被称为计算图框架。其深度学习相关的部分我们不在这里做过多讨论，有很丰富的资料，感兴趣的读者可以自行查阅。这里我们介绍一下 Tensorflow Serving，这个负责使用训练好的模型的组件，其工作方式，与容器生态的关系，最终得出为何用它作为本设计中的代表应用的例子。
+Tensorflow 是近年来生态最完善的深度学习框架之一，从其工作方式来看，也可以被称为计算图框架。其深度学习相关的部分我们不在这里做过多讨论，有很丰富的资料，感兴趣的读者可以自行查阅。这里我们介绍一下 Tensorflow Serving \cite{serving} ，这个负责使用训练好的模型的组件，其工作方式，与容器生态的关系，最终得出为何用它作为本设计中的代表应用的例子。
 
 Tensorflow Serving 可以将 Tensorflow 训练得到的模型，注意默认支持 saved model 格式的模型，对 tensorflow 产出训练结果有了解的读者应当知道其中差别。
 
@@ -50,7 +50,7 @@ Tensorflow Serving 非常注重面向容器的生态，不难得出结论，只�
 
 \subsubsection{Kubernetes Operator}
 
-Kubernetes Operator 是 Kubernetes 生态中为用户自己提供调度逻辑和功能扩展的一类接口与实现方式的总称。
+Kubernetes Operator \cite{operator} 是 Kubernetes 生态中为用户自己提供调度逻辑和功能扩展的一类接口与实现方式的总称。
 
 \subsection{实现方式}
 
@@ -420,19 +420,70 @@ kubernetes operator 事实上对于已存在的 CRD 进行变更，变动前后�
 
 本部分我们将人工编排的部署方式，不在服务器重叠多个业务租户，或者小规模的情况下将所有业务租户重叠部署在所有服务器上的情况，和我们的算法给出的结果进行对比。值得注意的是，这里在给定资源和要求的前提下，算法输出可以按照算法模块的输出即可，与执行器的动作无关。我们的对比也仅仅是理论计算为主。对于涉及执行的部分则不能如此。例如实际执行压力测试，观察效果。
 
- \subsubsection{结果举例}
+\subsubsection{结果举例}
 
- 本部分列出几个调度输入以及对应的输出。
+本部分列出几个调度输入以及对应的输出。
 
-\subsubsection{资源利用率}
+\begin{table}[]
+\begin{tabular}{llll}
+输入 & 模型名     & 内存    & 计算资源  \\
+   & mnist   & 100   & 50    \\
+   & dummy   & 50    & 10    \\
+   & 服务器副本数  & 内存    & 计算资源  \\
+   & 1       & 1024  & 200   \\
+输出 & pod 副本数 & 模型名   &       \\
+   & 1       & mnist & dummy
+\end{tabular}
+\caption{简单输入}
+\end{table}
 
-本部分对比在人工部署，逻辑集群上不堆叠多个业务时，资源利用率和我们的方法相比如何。
+\begin{table}[]
+\begin{tabular}{llll}
+输入 & 模型名      & 内存    & 计算资源     \\
+   & mnist    & 100   & 50       \\
+   & dummy    & 50    & 10       \\
+   & big\_cnn & 500   & 200      \\
+   & 服务器副本数   & 内存    & 计算资源     \\
+   & 1        & 200   & 100      \\
+   & 1        & 600   & 300      \\
+输出 & pod 副本数  & 模型名   &          \\
+   & 1        & mnist & big\_cnn \\
+   & 1        & dummy &
+\end{tabular}
+\caption{复杂输入 - 多个 Deployment 输出}
+\end{table}
+
+\begin{table}[]
+\begin{tabular}{llll}
+输入 & 模型名     & 内存            & 计算资源  \\
+   & mnist   & 100           & 50    \\
+   & dummy   & 50            & 10    \\
+   & test1   & 200           &       \\
+   & test2   & 180           &       \\
+   & test3   & 210           &       \\
+   & 分组      & 模型名           & 计算资源  \\
+   &         & test\{1,2,3\} & 200   \\
+   & 服务器副本数  & 内存            & 计算资源  \\
+   & 2       & 600           & 200   \\
+输出 & pod 副本数 & 模型名           &       \\
+   & 1       & mnist         & dummy \\
+   & 1       & test\{1,2,3\} &
+\end{tabular}
+\caption{分组输入 - 指定模型组总计算资源消耗}
+\end{table}
+
+% \subsubsection{资源利用率}
+
+% 本部分对比在人工部署，逻辑集群上不堆叠多个业务时，资源利用率和我们的方法相比如何。
 
 \subsubsection{容灾能力}
 
 本部分测试在一些节点随机失效的前提下，系统是否能够继续提供服务，照常工作。对于基于 kubernetes 的调度编排系统来说，测试环境的 pod 可以看作大规模部署下的服务器，我们随机 kill 一定比例的 pod 就可以模拟服务器故障的场景。对于传统运行方式，则可以通过 kill 服务进程的方式来模拟。
 
+我们测试了 kill 在运行的进程，可见容器在30秒之内均能被重新启动，可见 kubelet 的原地进程监控与重启直接保证了容灾能力。但是崩溃的过程中，过少的 pod 数量将会导致服务能力不足，导致部分请求不能被响应，延迟提高等后果。这仍然需要部署时计算好足够的计算资源数再提交任务。
+
 \subsubsection{性能测试与压力测试}
 
 本部分测试整个系统的抗压能力，不止是算法的理论推导部分。我们的测试方法是采用 grpc 客户端去请求 Tensorflow Serving 服务，加大压力观察服务的承载能力。这个测试一方面可以对比两种部署方式的承载能力，给出结论，另一方面也可以证明本设计的系统确实可以工作，并且有工业级的能力。
 
+我们预期两种方式的性能差距很小，如果有差距，可能来源于资源限制或者 kubernetes 的 proxy 和网络组件造成的 overhead。
