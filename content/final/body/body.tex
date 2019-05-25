@@ -171,6 +171,25 @@ f7a634bc0085        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago        Up 20 hours                             k8s_POD_etcd-minikube_kube-system_973c2fad42d1ca0c0cafe14fa28f9a70_0
 \end{lstlisting}
 
+图 \ref{fig:dashboard} 为 Kubernetes 集群运行后的 dashboard 截图，图 \ref{fig:pods} 为 Pods 页面。
+
+\begin{figure}
+    \includegraphics[width=0.8\linewidth]{dashboard-header.png}
+    \caption{Kubernetes Dashboard}\label{fig:dashboard}
+\end{figure}
+
+\begin{figure}
+    \includegraphics[width=0.8\linewidth]{dashboard-pods.png}
+    \caption{Dashboard Pods View}\label{fig:pods}
+\end{figure}
+
+图 \ref{fig:python-replica} 展示了尝试在本地 Kubernetes 集群中运行 python 应用，因为未指定一个不会退出的命令来运行，应用容器的重启是预期行为。我们在管理页面填写 python 镜像的地址，副本数，服务暴露的端口等信息，就可以通过 replica set 的方式启动 pods。启动后可以看到自动生成的描述这个部署的 yaml 定义文件。如果我们编写好类似的定义文件，使用 kubectl 命令行工具提交的话，也能得到同样的部署。
+
+\begin{figure}
+    \includegraphics[width=0.8\linewidth]{python-sets.png}
+    \caption{Python Replica Set}\label{fig:python-replica}
+\end{figure}
+
 \subsubsection{搭建 Kubernetes Operator 开发环境}
 
 在可以连接并管理一个 Kubernetes 集群的前提下，我们可以开发自己的 Operator，并且以某些方式运行我们的 Operator，让它进行决策，并且向 API Server 提交 API 对象以执行我们需要的行为。
@@ -183,7 +202,16 @@ Operator SDK 是一个命令行工具。上述框架代码的很多细节，手�
 
 下面给出使用 Operator-SDK 时，常用的几个操作如何执行，也方便读者理解系统运行的方式，从而理解本文内容。
 
-%TODO: stdout
+\begin{lstlisting}[language=bash]
+
+# 根据数据结构定义生成必要的代码
+operator-sdk generate k8s
+
+# kubectl context 正确配置后，在本地运行 Operator
+export OPERATOR_NAME=tf-inference-operator
+operator-sdk up local --namespace=default
+
+\end{lstlisting}
 
 \subsubsection{开发调度执行模块}
 
