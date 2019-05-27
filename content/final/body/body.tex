@@ -174,11 +174,13 @@ e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 图 \ref{fig:dashboard} 为 Kubernetes 集群运行后的 dashboard 截图，图 \ref{fig:pods} 为 Pods 页面。
 
 \begin{figure}
+    \centering
     \includegraphics[width=0.8\linewidth]{dashboard-header.png}
     \caption{Kubernetes Dashboard}\label{fig:dashboard}
 \end{figure}
 
 \begin{figure}
+    \centering
     \includegraphics[width=0.8\linewidth]{dashboard-pods.png}
     \caption{Dashboard Pods View}\label{fig:pods}
 \end{figure}
@@ -186,6 +188,7 @@ e4d548c62aa5        k8s.gcr.io/pause:3.1   "/pause"                 20 hours ago
 图 \ref{fig:python-replica} 展示了尝试在本地 Kubernetes 集群中运行 python 应用，因为未指定一个不会退出的命令来运行，应用容器的重启是预期行为。我们在管理页面填写 python 镜像的地址，副本数，服务暴露的端口等信息，就可以通过 replica set 的方式启动 pods。启动后可以看到自动生成的描述这个部署的 yaml 定义文件。如果我们编写好类似的定义文件，使用 kubectl 命令行工具提交的话，也能得到同样的部署。
 
 \begin{figure}
+    \centering
     \includegraphics[width=0.8\linewidth]{python-sets.png}
     \caption{Python Replica Set}\label{fig:python-replica}
 \end{figure}
@@ -374,11 +377,31 @@ spec:
 
 算法的输入如下：
 
-有 $N$ 个业务，或称租户，模型，下面统称模型，记为 $Model_1,Model_2,...,Model_N$。每个模型都需要 $a$ 个硬性资源 $Rfix_1,Rfix_2,...,Rfix_a$，$b$ 个弹性资源 $Relastic_1,Relastic_2,...,Relastic_b$。我们还有 $M$ 种机器类型，每种机器类型也需要给出上述硬性资源和弹性资源的提供量 $Rfix_1,Rfix_2,...,Rfix_a,Relastic_1,Relastic_2,...,Relastic_b$。
+有 $N$ 个业务，或称租户，模型，下面统称模型，记为
+
+$$Model_1,Model_2,...,Model_N$$
+
+每个模型都需要 $a$ 个硬性资源
+
+$$Rfix_1,Rfix_2,...,Rfix_a$$
+
+$b$ 个弹性资源
+
+$$Relastic_1,Relastic_2,...,Relastic_b$$
+
+我们还有 $M$ 种机器类型，每种机器类型也需要给出上述硬性资源和弹性资源的提供量
+
+$$Rfix_1,Rfix_2,...,Rfix_a,Relastic_1,Relastic_2,...,Relastic_b$$
 
 算法的输出如下：
 
-我们需要给出 $d$ 个部署信息，记为 $Deployment_1,Deployment_2,...,Deployment_d$，每个部署信息包括了其所包含的模型列表以及需要的机器个数，即模型列表和副本数组成的二元组：$([Model_x,Model_y,...,Model_{last}],Replicas)$。
+我们需要给出 $d$ 个部署信息，记为
+
+$$Deployment_1,Deployment_2,...,Deployment_d$$
+
+每个部署信息包括了其所包含的模型列表以及需要的机器个数，即模型列表和副本数组成的二元组
+
+$$([Model_x,Model_y,...,Model_{last}],Replicas)$$
 
 \subsubsection{贪心算法}
 
