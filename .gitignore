@@ -244,3 +244,6 @@ TSWLatexianTemp*
 
 # macOS
 .DS_Store
+
+# MS Office tmp
+~$*
