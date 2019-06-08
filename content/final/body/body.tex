@@ -477,48 +477,71 @@ kubernetes operator 事实上对于已存在的 CRD 进行变更，变动前后�
 
 \begin{table}[]
 \begin{tabular}{llll}
+\toprule
 输入 & 模型名     & 内存    & 计算资源  \\
+\midrule
    & mnist   & 100   & 50    \\
    & dummy   & 50    & 10    \\
+\midrule
    & 服务器副本数  & 内存    & 计算资源  \\
+\midrule
    & 1       & 1024  & 200   \\
+\midrule
 输出 & pod 副本数 & 模型名   &       \\
-   & 1       & mnist & dummy
+\midrule
+   & 1       & mnist & dummy  \\
+\bottomrule
 \end{tabular}
 \caption{简单输入}
 \end{table}
 
 \begin{table}[]
 \begin{tabular}{llll}
+\toprule
 输入 & 模型名      & 内存    & 计算资源     \\
+\midrule
    & mnist    & 100   & 50       \\
    & dummy    & 50    & 10       \\
    & big\_cnn & 500   & 200      \\
+\midrule
    & 服务器副本数   & 内存    & 计算资源     \\
+\midrule
    & 1        & 200   & 100      \\
    & 1        & 600   & 300      \\
+\midrule
 输出 & pod 副本数  & 模型名   &          \\
+\midrule
    & 1        & mnist & big\_cnn \\
-   & 1        & dummy &
+   & 1        & dummy &  \\
+\bottomrule
 \end{tabular}
 \caption{复杂输入 - 多个 Deployment 输出}
 \end{table}
 
 \begin{table}[]
 \begin{tabular}{llll}
+\toprule
 输入 & 模型名     & 内存            & 计算资源  \\
+\midrule
    & mnist   & 100           & 50    \\
    & dummy   & 50            & 10    \\
    & test1   & 200           &       \\
    & test2   & 180           &       \\
    & test3   & 210           &       \\
+\midrule
    & 分组      & 模型名           & 计算资源  \\
+\midrule
    &         & test\{1,2,3\} & 200   \\
+\midrule
    & 服务器副本数  & 内存            & 计算资源  \\
+\midrule
    & 2       & 600           & 200   \\
+\midrule
 输出 & pod 副本数 & 模型名           &       \\
+\midrule
    & 1       & mnist         & dummy \\
-   & 1       & test\{1,2,3\} &
+   & 1       & test\{1,2,3\} &  \\
+\bottomrule
 \end{tabular}
 \caption{分组输入 - 指定模型组总计算资源消耗}
 \end{table}
@@ -563,8 +586,11 @@ kubernetes operator 事实上对于已存在的 CRD 进行变更，变动前后�
 
 \begin{table}[]
 \begin{tabular}{lll}
+\toprule
 环境  & 裸机 & Kubernetes \\
-QPS & 17 & 14        
+\midrule
+QPS & 17 & 14     \\
+\bottomrule   
 \end{tabular}
 \caption{QPS 对比}\label{qps-table}
 \end{table}
